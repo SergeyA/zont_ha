@@ -170,9 +170,22 @@ class Zont:
             triggered=boiler.active,
         ))
 
+    @staticmethod
+    def _create_circuit_target_temp_sensor(boiler: CircuitZONT, device: DeviceZONT):
+        """Создает сенсор, отражающий целевую или рассчитанную температуру для контура."""
+        device.sensors.append(SensorZONT(
+            id=f'{boiler.id}_boiler_target_temp',
+            name=f'{boiler.name}_target_temp',
+            type=TypeOfSensor.TEMPERATURE,
+            status=StateOfSensor.OK,
+            value=boiler.target_temp,
+            unit='ºC'
+        ))
+    
     def _create_sensors_of_boiler(self, device: DeviceZONT):
         """Создаёт дополнительные сенсоры котла"""
         for circuit in device.circuits:
+            self._create_circuit_target_temp_sensor(circuit, device)
             if circuit.type == TypeOfCircuit.BOILER:
                 self._create_boiler_error_sensor(circuit, device)
                 self._create_boiler_active_sensor(circuit, device)
